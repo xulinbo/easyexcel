@@ -35,9 +35,6 @@
     </tr>
     <!-- 报文体 -->
     <tr th:each="rows,ind: ${ReqList}" th:class="${ind.odd}?oddrowcolor:evenrowcolor" >
-        <th:each >
-
-        </th:each>
         <td th:each="cells,stat: ${rows}" th:text="${cells}"
             th:classappend="${cells ne null and  (#strings.contains(cells,'循环体') || #strings.contains(cells,'结束')) } ?bodylistfont">
 

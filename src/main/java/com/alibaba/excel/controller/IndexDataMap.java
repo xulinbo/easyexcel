@@ -1,5 +1,8 @@
 package com.alibaba.excel.controller;
 
+import com.alibaba.excel.EasyExcelFactory;
+import com.alibaba.excel.metadata.Sheet;
+import com.alibaba.excel.util.FileUtil;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.*;
@@ -21,39 +24,40 @@ public class IndexDataMap {
     private List<String> modules = new ArrayList<String>();//模块
 
     public void init() throws IOException {
-        InputStream inputStream =new BufferedInputStream(new FileInputStream(path));
-        SXSSFWorkbook wb = new SXSSFWorkbook(new XSSFWorkbook(inputStream));
-        inputStream.close();
-        int num = wb.getNumberOfSheets();
-        XSSFSheet xsheet =wb.getXSSFWorkbook().getSheetAt(0);
-        Iterator<Row> it = xsheet.rowIterator();
+
+        InputStream is = FileUtil.getResourcesFileInputStream("codeadd.properties");
+        Properties properties = new Properties();
+        properties.load(is);
+        Set<Map.Entry<Object,Object>> set = properties.entrySet();
+        Iterator<Map.Entry<Object,Object>> it = set.iterator();
         while(it.hasNext()){
-            it.next();it.next();
-            XSSFRow row = (XSSFRow) it.next();
-            XSSFCell cell = row.getCell(0);
-            String code = cell.getStringCellValue();//*!A1
-            String module = row.getCell(1).getStringCellValue();
-            String name_cn = row.getCell(2).getStringCellValue();
-            XSSFHyperlink hyperlink = cell.getHyperlink();
-            if(hyperlink == null || hyperlink.getAddress() == null){
-                System.out.println(code);
+            Map.Entry<Object,Object> enty= it.next();
+            if(enty.getKey() != null && enty.getValue()!=null)
+                codeMap.put(enty.getKey().toString(),enty.getValue().toString());
+        }
+        is.close();
+
+        InputStream inputStream =new BufferedInputStream(new FileInputStream(path));
+        List<Object> data = EasyExcelFactory.read(inputStream, new Sheet(1, 2));
+        inputStream.close();
+        for(Object obj:data){
+            List<String> list = (List<String>) obj;
+            String code = list.get(0);
+            String module = list.get(1);
+            String name_cn = list.get(2);
+            String add = codeMap.get(code);//超链接
+            if(add == null || "".equals(add)){
                 continue;
             }
-            String add = cell.getHyperlink().getAddress();
-            if(add.indexOf("!A1")>=0)add = add.substring(0,add.indexOf("!A1"));
-
-            if(!module.contains(module))modules.add(module);//模块列表
-
             nameMap.put(code,name_cn);// code 与中文名
             if(moduleMap.containsKey(module)){
                 moduleMap.get(module).add(code);
             }else{
-                List<String> list = new ArrayList<String>();
-                list.add(code);
-                moduleMap.put(module,list);
+                List<String> modulelist = new ArrayList<String>();
+                modulelist.add(code);
+                moduleMap.put(module,modulelist);
             }
 
-            codeMap.put(code,add);//code 与 sheet
             TransModel transModel = new TransModel(code,name_cn,add,module);
             transMap.put(code,transModel);
             if(moduleTransMap.containsKey(module)){
@@ -63,8 +67,55 @@ public class IndexDataMap {
                 trans.add(transModel);
                 moduleTransMap.put(module,trans);
             }
+            if(!modules.contains(module)){
+                modules.add(module);
+            }
         }
+        //模块 排序
         if(modules.size()>0) modules.sort(null);
+//        SXSSFWorkbook wb = new SXSSFWorkbook(new XSSFWorkbook(inputStream));
+//        inputStream.close();
+//        int num = wb.getNumberOfSheets();
+//        XSSFSheet xsheet =wb.getXSSFWorkbook().getSheetAt(0);
+//        Iterator<Row> it = xsheet.rowIterator();
+//        while(it.hasNext()){
+//            it.next();it.next();
+//            XSSFRow row = (XSSFRow) it.next();
+//            XSSFCell cell = row.getCell(0);
+//            String code = cell.getStringCellValue();
+//            String module = row.getCell(1).getStringCellValue();
+//            String name_cn = row.getCell(2).getStringCellValue();
+//            XSSFHyperlink hyperlink = cell.getHyperlink();
+//            if(hyperlink == null || hyperlink.getAddress() == null){
+//                System.out.println(code);
+//                continue;
+//            }
+//
+//            String add = cell.getHyperlink().getAddress();//*!A1
+//            if(add.indexOf("!A1")>=0)add = add.substring(0,add.indexOf("!A1"));
+//            if(!module.contains(module))modules.add(module);//模块列表
+//            nameMap.put(code,name_cn);// code 与中文名
+//            if(moduleMap.containsKey(module)){
+//                moduleMap.get(module).add(code);
+//            }else{
+//                List<String> list = new ArrayList<String>();
+//                list.add(code);
+//                moduleMap.put(module,list);
+//            }
+//            System.out.println(code+"="+add);
+//            codeMap.put(code,add);//code 与 sheet
+//            TransModel transModel = new TransModel(code,name_cn,add,module);
+//            transMap.put(code,transModel);
+//            if(moduleTransMap.containsKey(module)){
+//                moduleTransMap.get(module).add(transModel);
+//            }else{
+//                List<TransModel> trans = new ArrayList<TransModel>();
+//                trans.add(transModel);
+//                moduleTransMap.put(module,trans);
+//            }
+//            if(modules.size()>0) modules.sort(null);
+//        }
+
     }
     class TransModel{
         private String code;

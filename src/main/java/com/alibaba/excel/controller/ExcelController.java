@@ -30,14 +30,14 @@ public class ExcelController {
         mv.setViewName("queryList");
         mv.addObject("Modules",indexDataMap.getModules());
         mv.addObject("Transactions",indexDataMap.getModuleTransMap());
+        mv.addObject("Test","test");
         return mv;
     }
 
-
     @RequestMapping("/query")
-    public ModelAndView getTransFields(String code) throws IOException {
+    public ModelAndView getTransFields(String module,String code,String name) throws IOException {
         ModelAndView mv = new ModelAndView();
-        mv.setViewName("dataform");
+        mv.setViewName("queryList");
 
         InputStream inputStream =new FileInputStream(indexDataMap.getPath());
         ExcelListener excelListener = new ExcelListener();

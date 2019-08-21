@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <title>渠道接口查询</title>
+    <link th:href="@{/main.css}" rel="stylesheet" type="text/css" />
 </head>
 <body>
 <form id="form" action="query"   name="form">
@@ -15,18 +16,34 @@
         <table th:fragment="queryArea" border="0" cellspacing="3" cellpadding="0" class="content_table">
             <tr>
                 <td width="120" height="30" align="right">
-                    交易码:
+                    模块:
                 </td>
                 <td>
-                    <input  style="width:100px;"
-                           name="code" type="text"
-                           />
-<!--                    th:value="${#calendars.format(createTime,'yyyy-MM-dd')}"-->
-<!--                    onclick = "WdatePicker({dateFmt:'yyyy-MM-dd'})"-->
+                    <p th:each="mo: ${Modules}" th:text="${mo}"></p>
+                    <select id="module" name="module">
+                        <option>请选择</option>
+                        <option th:each="mod,sta: ${Modules}" th:text="${mod}"></option>
+                    </select>
                 </td>
             </tr>
             <tr>
-                <td height="30" colspan="15" align="right">
+                <td width="120" height="30" align="right">
+                    交易码:
+                </td>
+                <td>
+                    <input  style="width:100px;" name="code" type="text" />
+                </td>
+            </tr>
+            <tr>
+                <td width="120" height="30" align="right">
+                    交易名称:
+                </td>
+                <td>
+                    <input  style="width:100px;" name="name" type="text" />
+                </td>
+            </tr>
+            <tr>
+                <td height="30" colspan="15" align="center">
                     <input type="submit" value="查询" class="inp_L3"    />
                 </td>
             </tr>
@@ -59,6 +76,7 @@
         </table>-->
 <!--    </th:block>-->
 </form>
-
+<div th:replace="dataform::info">
+</div>
 </body>
 </html>

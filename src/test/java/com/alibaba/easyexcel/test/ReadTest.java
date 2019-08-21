@@ -16,9 +16,7 @@ import org.apache.poi.xssf.usermodel.*;
 import org.junit.Test;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class ReadTest {
 
@@ -45,7 +43,8 @@ public class ReadTest {
         Object o = new Object();
         com.alibaba.excel.listener.ExcelListener excelListener = new com.alibaba.excel.listener.ExcelListener();
         ExcelReader excelReader = EasyExcelFactory.getReader(inputStream,excelListener);
-        List<Sheet> sheets = excelReader.getSheets();
+        List<Sheet> sheets
+                = excelReader.getSheets();
         inputStream.close();
         inputStream =new BufferedInputStream(new FileInputStream("F:\\开发文档\\渤海银行整合平台服务接口清单-瘦身版.xlsx"));
         List<Object> data = EasyExcelFactory.read(inputStream, new Sheet(1, 2));
@@ -262,6 +261,54 @@ public class ReadTest {
         for (Object ob:datas) {
             System.out.println(i++);
             System.out.println(ob.toString());
+        }
+    }
+    @Test
+    public void testPoi() throws IOException {
+        Map codeMap = new HashMap();
+        InputStream inputStream =new BufferedInputStream(new FileInputStream("F:\\开发文档\\渤海银行整合平台服务接口清单-瘦身版.xlsx"));
+        SXSSFWorkbook wb = new SXSSFWorkbook(new XSSFWorkbook(inputStream));
+        inputStream.close();
+        int num = wb.getNumberOfSheets();
+        XSSFSheet xsheet =wb.getXSSFWorkbook().getSheetAt(0);
+        Iterator<Row> it = xsheet.rowIterator();
+        while(it.hasNext()){
+            it.next();it.next();
+            XSSFRow row = (XSSFRow) it.next();
+            XSSFCell cell = row.getCell(0);
+            String code = cell.getStringCellValue();
+            String module = row.getCell(1).getStringCellValue();
+            String name_cn = row.getCell(2).getStringCellValue();
+            XSSFHyperlink hyperlink = cell.getHyperlink();
+            if(hyperlink == null || hyperlink.getAddress() == null){
+                System.out.println(code);
+                continue;
+            }
+            String add = cell.getHyperlink().getAddress();//*!A1
+            if(add.indexOf("!A1")>=0)add = add.substring(0,add.indexOf("!A1"));
+//
+//            if(!module.contains(module))modules.add(module);//模块列表
+
+//            nameMap.put(code,name_cn);// code 与中文名
+//            if(moduleMap.containsKey(module)){
+//                moduleMap.get(module).add(code);
+//            }else{
+//                List<String> list = new ArrayList<String>();
+//                list.add(code);
+//                moduleMap.put(module,list);
+//            }
+            System.out.println(code+"="+add);
+            codeMap.put(code,add);//code 与 sheet
+//            TransModel transModel = new TransModel(code,name_cn,add,module);
+//            transMap.put(code,transModel);
+//            if(moduleTransMap.containsKey(module)){
+//                moduleTransMap.get(module).add(transModel);
+//            }else{
+//                List<TransModel> trans = new ArrayList<TransModel>();
+//                trans.add(transModel);
+//                moduleTransMap.put(module,trans);
+//            }
+//            if(modules.size()>0) modules.sort(null);
         }
     }
 
