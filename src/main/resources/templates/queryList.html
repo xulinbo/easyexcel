@@ -19,10 +19,10 @@
                     模块:
                 </td>
                 <td>
-                    <p th:each="mo: ${Modules}" th:text="${mo}"></p>
-                    <select id="module" name="module">
+                   <!-- <p th:each="mo: ${Modules}" th:text="${mo}"></p>-->
+                    <select  id="module" name="module">
                         <option>请选择</option>
-                        <option th:each="mod,sta: ${Modules}" th:text="${mod}"></option>
+                        <option th:each="mo: ${Modules}" th:value="${mo}" th:text="${mo}"></option>
                     </select>
                 </td>
             </tr>
