@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html  xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8" />
+    <title>dataform</title>
+    <link th:href="@{/main.css}" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+<th:block th:fragment="info">
+<table class="altrowstable" >
+    <tr class="tablehead">
+        <td colspan="2" >接口名：</td>
+        <td colspan="6" th:text="${TransCode}"></td>
+    </tr>
+    <tr class="tablehead">
+        <td colspan="2" >接口中文名：</td>
+        <td colspan="6" th:text="${TransName}"></td>
+    </tr>
+
+    <!-- 请求报文 -->
+    <tr class="bodyhead">
+        <td colspan="2" >请求报文</td>
+        <td colspan="6"></td>
+    </tr>
+    <tr class="fieldhead">
+        <td >字段名Field Nam</td>
+        <td>字段描述Field Desc</td>
+        <td>类型Type</td>
+        <td>长度Length</td>
+        <td>必输/可选M/O</td>
+        <td>取值范围或格式Range/Format</td>
+        <td>业务规则Business rules</td>
+        <td>备注</td>
+    </tr>
+    <!-- 报文体 -->
+    <tr th:each="rows,ind: ${ReqList}" th:class="${ind.odd}?oddrowcolor:evenrowcolor" >
+        <th:each >
+
+        </th:each>
+        <td th:each="cells,stat: ${rows}" th:text="${cells}"
+            th:classappend="${cells ne null and  (#strings.contains(cells,'循环体') || #strings.contains(cells,'结束')) } ?bodylistfont">
+
+        </td>
+    </tr>
+    <!-- 响应报文 -->
+    <tr class="bodyhead">
+        <td colspan="2" >响应报文</td>
+        <td colspan="6"></td>
+    </tr>
+    <tr class="fieldhead">
+        <td >字段名Field Nam</td>
+        <td>字段描述Field Desc</td>
+        <td>类型Type</td>
+        <td>长度Length</td>
+        <td>必输/可选M/O</td>
+        <td>取值范围或格式Range/Format</td>
+        <td>业务规则Business rules</td>
+        <td>备注</td>
+    </tr>
+    <tr th:each="rows,ind: ${ResList}" th:class="${ind.odd}?oddrowcolor:evenrowcolor" >
+        <td th:each="cells,stat: ${rows}" th:text="${cells}"
+            th:classappend="${cells ne null and  (#strings.contains(cells,'循环体') || #strings.contains(cells,'结束'))}?bodylistfont">
+
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <a th:href="queryList.html">返回</a>
+        </td>
+    </tr>
+</table>
+</th:block>
+</body>
+</html>

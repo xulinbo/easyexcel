@@ -20,42 +20,22 @@
         <jdk.version>1.7</jdk.version>
     </properties>
 
-    <scm>
-        <url>https://github.com/alibaba/easyexcel</url>
-        <connection>scm:git:https://git@github.com/alibaba/easyexcel.git</connection>
-    </scm>
-
-    <!--<repositories>-->
-        <!--<repository>-->
-            <!--<id>local-file</id>-->
-            <!--<url>file://${basedir}/lib/</url>-->
-            <!--<layout>default</layout>-->
-        <!--</repository>-->
-    <!--</repositories>-->
-
     <organization>
         <name>Alibaba Group</name>
         <url>https://github.com/alibaba</url>
     </organization>
 
-    <developers>
-        <developer>
-            <id>jipengfei</id>
-            <name>jipengfei</name>
-            <email>1558143046@qq.com</email>
-        </developer>
-    </developers>
-
-    <licenses>
-        <license>
-            <name>Apache 2</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-            <distribution>repo</distribution>
-            <comments>A business-friendly OSS license</comments>
-        </license>
-    </licenses>
-
     <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <version>1.5.8.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+            <version>1.5.8.RELEASE</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
@@ -79,25 +59,31 @@
         </dependency>
 
     </dependencies>
-    <distributionManagement>
-        <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
-        <repository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
-    </distributionManagement>
 
     <build>
         <plugins>
             <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>1.5.8.RELEASE</version>
+                <configuration>
+                    <mainClass>com.alibaba.excel.EasyexcelApplication</mainClass>
+                    <fork>true</fork><!-- 如果没有该配置，热部署的devtools不生效 -->
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
                 </configuration>
             </plugin>
             <plugin>
@@ -111,20 +97,6 @@
                         <phase>compile</phase>
                         <goals>
                             <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-gpg-plugin</artifactId>
-                <version>1.6</version>
-                <executions>
-                    <execution>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>sign</goal>
                         </goals>
                     </execution>
                 </executions>

@@ -1,0 +1,142 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title></title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+ <link href="css/jsoneditor.css" rel="stylesheet" type="text/css">
+ <style type="text/css">
+    body {
+      font: 10.5pt arial;
+      color: #4d4d4d;
+      line-height: 150%;
+      width: 500px;
+    }
+
+    code {
+      background-color: #f5f5f5;
+    }
+
+    #jsoneditor {
+      width: 500px;
+      height: 500px;
+    }
+  </style>
+<script type="text/javascript" src="js/jquery-1.9.1.js"></script>
+<script type="text/javascript" src="js/json2.js"></script>
+<script type="text/javascript" src="js/jsoneditor.js"></script>
+
+<script language="javascript">
+    var timer ;
+    $(function(){
+        // var timer =  setInterval(startRequest,1000);
+        function startRequest() {
+            var Codestatusid = $("#codestatusid").val();
+            // console.log(Codestatusid);
+            $.ajax({
+                type:'get',
+                dataType:'json',
+                url: "QueryCode",
+                data:{"Codestatusid":Codestatusid,"param2":"0002"}, //参数
+                success: function (data,status) {
+                    if(data != null && data != "" && "ECM000000" ==data.returnCode){
+                        var status = data.responseData.qrCodeResponse.qrCode.status;
+                        var codestatus = data.responseData.qrCodeResponse.qrCode.codestatus
+                        if("2" == codestatus){
+                            clearInterval(timer);
+                            $("#image").html("二维码失效，请重新扫码登陆。");
+                        }else{
+                            if ("1" == status) {
+                                clearInterval(timer);
+                                $("#image").html("登录成功。");
+                            }else if("2" ==status){
+                                clearInterval(timer);
+                                $("#image").html("登录验证失败。");
+                            }
+                        }
+
+                    }
+                },
+                error: function () {
+                    clearInterval(timer);
+                    $("#image").html("登录失败，请重新扫码登陆。");
+                }
+            });
+        }
+        $("#doItButton").click(function() {
+            var timestamp=new Date().getTime();
+            var username=$("#username").val();
+            var password=$("#password").val();
+            var codestatusid=username+timestamp;
+            $.ajax({
+                type:'get',
+                data:{"param1":"0001","param2":"0002"}, //参数
+                dataType:'json',
+                url: "/CreateCode?UserName="+username+"&Password="+password+"&Codestatusid="+codestatusid,
+                success: function(data) {
+                    debugger;
+                    if("ECM000000" == data.returnCode){
+                        //将图片的Base64编码设置给src
+                        $("#imgpic").attr("src","data:image/jpg;base64,"+data.responseData.content);
+                        $("#codestatusid").val(data.responseData.qrCode.codestatusid);
+                        // timer = setInterval(startRequest,1000);
+                    }
+                },
+                error:function(data){
+                    alert('响应失败！');
+                }
+            });
+
+        });
+    })
+</script>
+</head>
+<body>
+<div class="Title" >
+  <span class="mainTitle">Test</span>
+</div>
+<h1>扫描二维码登录</h1>
+<div id="image">
+    <img id="imgpic" src="##" />
+</div>
+<input type="text" id="codestatusid" />
+<table width="90%" border="0" cellpadding="0" cellspacing="0" class="mainTable">
+<tr>	   
+<td width="80%">
+<form name="form1" action="#" method="post" >
+	   <table width="100%" border="1" cellpadding="0" cellspacing="0" class="submitTable">
+	        <tr align="left" valign="middle">
+            <td width="100%" height="12" nowrap class="tdTitle">
+            <b>请求地址</b>
+                姓名：<input id="username" maxlength="128" size="64"/>
+                密码：<input id="password" maxlength="128" size="64"/>
+             <input type="button" id="doItButton" value="提交" >
+            </td>
+          </tr>	
+          <tr align="center" valign="middle">
+            <td width="100%" height="12" nowrap class="tdTitle"><b>发送信息</b></td>
+          </tr>	
+        <tr align="center" valign="middle">    
+            <td width="100%" align="center" nowrap class="tdValue">
+              <textarea name="sendMessage"  rows="15" cols="120" id="inJsoneditor">
+{
+"UserId":"1000"
+}                  
+              </textarea>		
+			</td>
+	    </tr>
+
+          <tr align="center" valign="middle">
+            <td width="100%" height="12" nowrap class="tdTitle"><b>返回信息</b></td>
+          </tr>
+          <tr align="center" valign="middle">
+            <td width="100%" align="center"  nowrap class="tdValue" >
+	              <div name="receiveMessage" rows="15" cols="120" id="jsoneditor"></div>		
+	          
+			</td>
+          </tr>
+  </table>
+</form>
+</td>
+</tr>
+</table>
+</body></html>

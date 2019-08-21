@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8" />
+    <title>index</title>
+</head>
+<body>
+<form id="form" action="javascript:void(0)" th:action="@{/queryDemo}" method="post" name="form">
+
+    <th:block th:fragment="main(query)">
+        <!-- 查询功能区 -->
+        <div class="userbox">
+                    <th:block th:replace="${query}">
+                        等待替换
+                    </th:block>
+
+        </div>
+        <!--/* 查询结果 */-->
+        <div  class="tablebox" style="overflow:visible;">
+            <th:block th:replace="${result}">
+                等待替换
+            </th:block>
+            <br/>
+
+            <br/>
+            <!--/*
+            分页操片段块
+            */-->
+            <div class="table_navi" th:fragment="pageBar">
+                ......
+            </div>
+        </div>
+    </th:block>
+</form>
+
+</body>
+</html>

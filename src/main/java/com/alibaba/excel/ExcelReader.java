@@ -134,6 +134,20 @@ public class ExcelReader {
     }
 
     /**
+     *
+     * @param name
+     * @return
+     */
+    public Sheet getSheetByName(String name){
+        List<Sheet> list = getSheets();
+        for(Sheet sheet : list){
+            if(name.equals(sheet.getSheetName())){
+                return sheet;
+            }
+        }
+        return null;
+    }
+    /**
      * validate param
      *
      * @param in

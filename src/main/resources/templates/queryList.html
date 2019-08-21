@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8" />
+    <title>渠道接口查询</title>
+</head>
+<body>
+<form id="form" action="query"   name="form">
+    <!--/*
+        th:fragment="queryArea"  ${query}定义查询框内容
+        th:fragment="resultArea" 定义结果展示内容
+    */-->
+<!--    <th:block th:replace="queryBase::main(~{::queryArea})">-->
+        <!--/* 只需要写真正的查询内容table，引用模板时，直接传入 */-->
+        <table th:fragment="queryArea" border="0" cellspacing="3" cellpadding="0" class="content_table">
+            <tr>
+                <td width="120" height="30" align="right">
+                    交易码:
+                </td>
+                <td>
+                    <input  style="width:100px;"
+                           name="code" type="text"
+                           />
+<!--                    th:value="${#calendars.format(createTime,'yyyy-MM-dd')}"-->
+<!--                    onclick = "WdatePicker({dateFmt:'yyyy-MM-dd'})"-->
+                </td>
+            </tr>
+            <tr>
+                <td height="30" colspan="15" align="right">
+                    <input type="submit" value="查询" class="inp_L3"    />
+                </td>
+            </tr>
+        </table>
+<!--
+        &lt;!&ndash;/* 只需要写真正的结果内容table，引用模板时，直接传入 */&ndash;&gt;
+        <table th:fragment="resultArea" width="100%" border="0" cellspacing="0" cellpadding="0">
+            &lt;!&ndash;/* 表头 */&ndash;&gt;
+            <tr class="titlebg">
+                <td align="center" nowrap="nowrap" class="titlebg">
+                    全选<input type="checkbox" id="mainBox"/>
+                </td>
+                <td align="center" nowrap="nowrap" class="titlebg">
+                    日期
+                </td>
+                ....省略....
+            </tr>
+            &lt;!&ndash;/* 这个注释之间的内容会在渲染之后去掉 */&ndash;&gt;
+            <tr th:if="${orderVoList}" th:each="order,stat:${orderVoList}">
+                <td align="center" nowrap="nowrap" >
+                    <input type="checkbox" name="objId" th:id="objId+${stat.count}"  th:value="${order.id}" value="testId" />
+                    <input type="hidden" name="objStatus"  th:value="${order.status}"/>
+                </td>
+                <td align="center" nowrap="nowrap"
+                    th:text="${#calendars.format(order.createTime,'yyyy-MM-dd')}">
+                    2018-01-01
+                </td>
+                ....省略....
+            </tr>
+        </table>-->
+<!--    </th:block>-->
+</form>
+
+</body>
+</html>
