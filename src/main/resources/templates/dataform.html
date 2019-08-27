@@ -36,7 +36,7 @@
     <!-- 报文体 -->
     <tr th:each="rows,ind: ${ReqList}" th:class="${ind.odd}?oddrowcolor:evenrowcolor" >
         <td th:each="cells,stat: ${rows}" th:text="${cells}"
-            th:classappend="${cells ne null and  (#strings.contains(cells,'循环体') || #strings.contains(cells,'结束')) } ?bodylistfont">
+            th:classappend="${cells ne null and  (#strings.contains(cells,'循环') and (#strings.contains(cells,'结束') || #strings.contains(cells,'开始') ||  #strings.contains(cells,'以下')) )} ?bodylistfont">
 
         </td>
     </tr>
@@ -63,7 +63,7 @@
     </tr>
     <tr>
         <td>
-            <a th:href="queryList.html">返回</a>
+            <a th:href="@{/index}">返回</a>
         </td>
     </tr>
 </table>

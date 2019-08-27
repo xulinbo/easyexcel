@@ -4,6 +4,7 @@ import com.alibaba.excel.analysis.BaseSaxAnalyser;
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.exception.ExcelAnalysisException;
 import com.alibaba.excel.metadata.Sheet;
+import org.apache.commons.collections4.bag.SynchronizedSortedBag;
 import org.apache.poi.openxml4j.exceptions.OpenXML4JException;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.xssf.eventusermodel.XSSFReader;
@@ -18,8 +19,7 @@ import org.xml.sax.XMLReader;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,8 +57,25 @@ public class XlsxSaxAnalyser extends BaseSaxAnalyser {
         XSSFReader.SheetIterator ite;
         sheetSourceList = new ArrayList<SheetSource>();
         ite = (XSSFReader.SheetIterator)xssfReader.getSheetsData();
+        int i = 0;
         while (ite.hasNext()) {
+            i++;
             InputStream inputStream = ite.next();
+//            if(i == 1){
+//                FileWriter fo = new FileWriter(new File("F://text.txt"));
+//                BufferedWriter bw = new BufferedWriter(fo);
+//                byte[] bs = new byte[10*1024];
+//                StringBuffer sb = new StringBuffer();
+//                while(inputStream.read(bs) != -1){
+//                    sb =  sb.append(new String(bs,"utf-8"));
+//                    bs = new byte[10*1024];
+//                }
+//                bw.flush();
+//                bw.write(sb.toString());
+//                bw.close();
+//                fo.close();
+//            }
+
             String sheetName = ite.getSheetName();
             SheetSource sheetSource = new SheetSource(sheetName, inputStream);
             sheetSourceList.add(sheetSource);
@@ -114,6 +131,12 @@ public class XlsxSaxAnalyser extends BaseSaxAnalyser {
         }
 
         return sheets;
+    }
+    public InputStream getInpuStream(int index){
+        if(sheetSourceList.size()==0){
+           return null;
+        }
+        return sheetSourceList.get(index).getInputStream();
     }
 
     class SheetSource {

@@ -147,6 +147,11 @@ public class ExcelReader {
         }
         return null;
     }
+
+    public InputStream getInpuStream(int index){
+        return analyser.getInpuStream(index);
+    }
+
     /**
      * validate param
      *
@@ -159,5 +164,13 @@ public class ExcelReader {
         } else if (in == null) {
             throw new IllegalArgumentException("InputStream can not null");
         }
+    }
+
+    public ExcelAnalyser getAnalyser() {
+        return analyser;
+    }
+
+    public void setAnalyser(ExcelAnalyser analyser) {
+        this.analyser = analyser;
     }
 }

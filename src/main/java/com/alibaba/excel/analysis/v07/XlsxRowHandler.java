@@ -13,6 +13,8 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.alibaba.excel.constant.ExcelXmlConstants.*;
 
@@ -40,6 +42,8 @@ public class XlsxRowHandler extends DefaultHandler {
 
     private AnalysisEventRegisterCenter registerCenter;
 
+    private Map<String,String> link_map = new HashMap<String,String>();
+
     public XlsxRowHandler(AnalysisEventRegisterCenter registerCenter, SharedStringsTable sst,
                           AnalysisContext analysisContext) {
         this.registerCenter = registerCenter;
@@ -59,16 +63,25 @@ public class XlsxRowHandler extends DefaultHandler {
 
     }
 
-    private void startCellValue(String name) {
-        if (name.equals(CELL_VALUE_TAG) || name.equals(CELL_VALUE_TAG_1)) {
-            // initialize current cell value
-            currentCellValue = "";
+    private void setTotalRowCount(String name, Attributes attributes) {
+        if (DIMENSION.equals(name)) {//dimension
+            String d = attributes.getValue(DIMENSION_REF);  //ref
+            String totalStr = d.substring(d.indexOf(":") + 1, d.length());
+            String c = totalStr.toUpperCase().replaceAll("[A-Z]", "");
+            analysisContext.setTotalCount(Integer.parseInt(c));
+        }
+        if(ExcelXmlConstants.HYPERLINK.equals(name)){
+            String sheet = attributes.getValue("location");
+            if (sheet != null && attributes.getValue("display")!=null) {
+                sheet = sheet.replaceAll("!A1","");
+                link_map.put(attributes.getValue("display"),sheet);
+                System.out.println(attributes.getValue("display")+"="+sheet);
+            }
         }
     }
-
     private void startCell(String name, Attributes attributes) {
-        if (ExcelXmlConstants.CELL_TAG.equals(name)) {
-            currentCellIndex = attributes.getValue(ExcelXmlConstants.POSITION);
+        if (ExcelXmlConstants.CELL_TAG.equals(name)) {//C
+            currentCellIndex = attributes.getValue(ExcelXmlConstants.POSITION);//r
             int nextRow = PositionUtils.getRow(currentCellIndex);
             if (nextRow > curRow) {
                 curRow = nextRow;
@@ -84,13 +97,40 @@ public class XlsxRowHandler extends DefaultHandler {
             }
         }
     }
+    private void startCellValue(String name) {
+        if (name.equals(CELL_VALUE_TAG) || name.equals(CELL_VALUE_TAG_1)) {//v || t
+            // initialize current cell value
+            currentCellValue = "";
+        }
+    }
 
+
+    @Override
+    public void endElement(String uri, String localName, String name) throws SAXException {
+        endRow(name);
+        endCellValue(name);
+        analysisContext.setLink_map(link_map);
+    }
+
+    @Override
+    public void characters(char[] ch, int start, int length) throws SAXException {
+        currentCellValue += new String(ch, start, length);
+    }
+
+
+
+    private void endRow(String name) {
+        if (name.equals(ROW_TAG)) { //row
+            registerCenter.notifyListeners(new OneRowAnalysisFinishEvent(curRowContent,curCol));
+            curRowContent = new String[20];
+        }
+    }
     private void endCellValue(String name) throws SAXException {
         // ensure size
         if (curCol >= curRowContent.length) {
             curRowContent = Arrays.copyOf(curRowContent, (int)(curCol * 1.5));
         }
-        if (CELL_VALUE_TAG.equals(name)) {
+        if (CELL_VALUE_TAG.equals(name)) {  //v
 
             switch (currentCellType) {
                 case STRING:
@@ -100,37 +140,8 @@ public class XlsxRowHandler extends DefaultHandler {
                     break;
             }
             curRowContent[curCol] = currentCellValue;
-        } else if (CELL_VALUE_TAG_1.equals(name)) {
+        } else if (CELL_VALUE_TAG_1.equals(name)) { //t
             curRowContent[curCol] = currentCellValue;
-        }
-    }
-
-    @Override
-    public void endElement(String uri, String localName, String name) throws SAXException {
-        endRow(name);
-        endCellValue(name);
-    }
-
-    @Override
-    public void characters(char[] ch, int start, int length) throws SAXException {
-        currentCellValue += new String(ch, start, length);
-    }
-
-
-    private void setTotalRowCount(String name, Attributes attributes) {
-        if (DIMENSION.equals(name)) {
-            String d = attributes.getValue(DIMENSION_REF);
-            String totalStr = d.substring(d.indexOf(":") + 1, d.length());
-            String c = totalStr.toUpperCase().replaceAll("[A-Z]", "");
-            analysisContext.setTotalCount(Integer.parseInt(c));
-        }
-
-    }
-
-    private void endRow(String name) {
-        if (name.equals(ROW_TAG)) {
-            registerCenter.notifyListeners(new OneRowAnalysisFinishEvent(curRowContent,curCol));
-            curRowContent = new String[20];
         }
     }
 

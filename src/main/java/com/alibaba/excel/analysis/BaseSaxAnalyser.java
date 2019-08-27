@@ -83,5 +83,8 @@ public abstract class BaseSaxAnalyser implements AnalysisEventRegisterCenter, Ex
         }
         return list;
     }
+    public AnalysisContext getAnalysisContext() {
+        return analysisContext;
+    }
 
 }

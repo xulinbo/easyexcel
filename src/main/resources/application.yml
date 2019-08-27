@@ -3,6 +3,9 @@ spring:
     cache: false
     suffix: .html
     encoding: utf-8
-    content-type: text/html
   resources:
     static-locations: classpath:/resources/, classpath:/static/ ,classpath:/templates/
+logging:
+  level:
+    root: info
+    com.alibaba.excel: debug

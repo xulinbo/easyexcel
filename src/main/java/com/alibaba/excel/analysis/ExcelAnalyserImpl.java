@@ -18,6 +18,8 @@ import java.util.List;
  */
 public class ExcelAnalyserImpl implements ExcelAnalyser {
 
+
+
     private AnalysisContext analysisContext;
 
     private BaseSaxAnalyser saxAnalyser;
@@ -82,6 +84,11 @@ public class ExcelAnalyserImpl implements ExcelAnalyser {
         return saxAnalyser.getSheets();
     }
 
+    @Override
+    public InputStream getInpuStream(int index) {
+        return saxAnalyser.getInpuStream(index);
+    }
+
     private void appendListeners(BaseSaxAnalyser saxAnalyser) {
         saxAnalyser.cleanAllListeners();
         if (analysisContext.getCurrentSheet() != null && analysisContext.getCurrentSheet().getClazz() != null) {
@@ -92,4 +99,7 @@ public class ExcelAnalyserImpl implements ExcelAnalyser {
         }
     }
 
+    public AnalysisContext getAnalysisContext() {
+        return analysisContext;
+    }
 }

@@ -14,4 +14,5 @@ public class ExcelXmlConstants {
 
     public static final String CELL_VALUE_TAG_1 = "t";
 
+    public static final String HYPERLINK="hyperlink";
 }

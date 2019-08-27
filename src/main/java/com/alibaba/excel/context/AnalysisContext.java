@@ -8,6 +8,7 @@ import com.alibaba.excel.support.ExcelTypeEnum;
 
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -129,4 +130,7 @@ public interface AnalysisContext {
      * @param use1904WindowDate
      */
     void setUse1904WindowDate(boolean use1904WindowDate);
+
+    Map<String,String> getLink_map();
+    void setLink_map(Map map);
 }

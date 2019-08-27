@@ -14,6 +14,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,6 +45,11 @@ public class XlsSaxAnalyser extends BaseSaxAnalyser implements HSSFListener {
     public List<Sheet> getSheets() {
         execute();
         return sheets;
+    }
+
+    @Override
+    public InputStream getInpuStream(int index) {
+        return null;
     }
 
     @Override

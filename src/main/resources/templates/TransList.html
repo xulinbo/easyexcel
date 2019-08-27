@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html  xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8" />
+    <title>translist</title>
+</head>
+<body>
+<th:block th:fragment="TransList">
+    <table class="altrowstable" >
+        <tr class="tablehead">
+            <td>模块</td>
+            <td>接口名</td>
+            <td>接口中文名</td>
+            <td>操作</td>
+        </tr>
+        <tr th:each="trans,ind: ${TransList}" th:class="${ind.odd}?oddrowcolor:evenrowcolor" >
+            <td  th:text="${trans.module}"></td>
+            <td  th:text="${trans.code}"></td>
+            <td  th:text="${trans.name}"></td>
+            <td >
+                <!-- tymeleaf 3.0.10 以上 -->
+                <button th:data-id="${trans.code}" onclick="queryDetail(this.getAttribute('data-id'))" type="button">详情</button>
+                <!--<a href="#" th:href="@{/queryDetail(code=${trans.code})}">详情</a>-->
+            </td>
+        </tr>
+    </table>
+</th:block>
+</body>
+</html>

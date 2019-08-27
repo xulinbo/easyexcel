@@ -4,43 +4,39 @@
     <meta charset="UTF-8" />
     <title>渠道接口查询</title>
     <link th:href="@{/main.css}" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" th:src="@{/jquery-1.9.1.js}"></script>
+    <script th:inline="javascript" type="text/javascript">
+        function queryDetail(code){
+            window.location.href="queryDetail?code="+code;
+        }
+    </script>
 </head>
 <body>
-<form id="form" action="query"   name="form">
-    <!--/*
-        th:fragment="queryArea"  ${query}定义查询框内容
-        th:fragment="resultArea" 定义结果展示内容
-    */-->
-<!--    <th:block th:replace="queryBase::main(~{::queryArea})">-->
+<div align="center">
+    <form id="form" action="query"   name="form">
+        <!--/*
+            th:fragment="queryArea"  ${query}定义查询框内容
+            th:fragment="resultArea" 定义结果展示内容
+        */-->
+        <!--    <th:block th:replace="queryBase::main(~{::queryArea})">-->
         <!--/* 只需要写真正的查询内容table，引用模板时，直接传入 */-->
         <table th:fragment="queryArea" border="0" cellspacing="3" cellpadding="0" class="content_table">
             <tr>
-                <td width="120" height="30" align="right">
-                    模块:
-                </td>
+                <td width="120" height="30" align="right">模块:</td>
                 <td>
-                   <!-- <p th:each="mo: ${Modules}" th:text="${mo}"></p>-->
                     <select  id="module" name="module">
-                        <option>请选择</option>
-                        <option th:each="mo: ${Modules}" th:value="${mo}" th:text="${mo}"></option>
+                        <option value="">请选择</option>
+                        <option th:each="mo: ${Modules}" th:value="${mo}" th:text="${mo}" ></option>
                     </select>
                 </td>
             </tr>
             <tr>
-                <td width="120" height="30" align="right">
-                    交易码:
-                </td>
-                <td>
-                    <input  style="width:100px;" name="code" type="text" />
-                </td>
+                <td width="120" height="30" align="right">交易码:</td>
+                <td><input  style="width:100px;" name="code" type="text" th:value="${code}"/></td>
             </tr>
             <tr>
-                <td width="120" height="30" align="right">
-                    交易名称:
-                </td>
-                <td>
-                    <input  style="width:100px;" name="name" type="text" />
-                </td>
+                <td width="120" height="30" align="right">交易名称:</td>
+                <td><input  style="width:100px;" name="name" type="text" th:value="${name}"/></td>
             </tr>
             <tr>
                 <td height="30" colspan="15" align="center">
@@ -48,35 +44,20 @@
                 </td>
             </tr>
         </table>
-<!--
-        &lt;!&ndash;/* 只需要写真正的结果内容table，引用模板时，直接传入 */&ndash;&gt;
-        <table th:fragment="resultArea" width="100%" border="0" cellspacing="0" cellpadding="0">
-            &lt;!&ndash;/* 表头 */&ndash;&gt;
-            <tr class="titlebg">
-                <td align="center" nowrap="nowrap" class="titlebg">
-                    全选<input type="checkbox" id="mainBox"/>
-                </td>
-                <td align="center" nowrap="nowrap" class="titlebg">
-                    日期
-                </td>
-                ....省略....
-            </tr>
-            &lt;!&ndash;/* 这个注释之间的内容会在渲染之后去掉 */&ndash;&gt;
-            <tr th:if="${orderVoList}" th:each="order,stat:${orderVoList}">
-                <td align="center" nowrap="nowrap" >
-                    <input type="checkbox" name="objId" th:id="objId+${stat.count}"  th:value="${order.id}" value="testId" />
-                    <input type="hidden" name="objStatus"  th:value="${order.status}"/>
-                </td>
-                <td align="center" nowrap="nowrap"
-                    th:text="${#calendars.format(order.createTime,'yyyy-MM-dd')}">
-                    2018-01-01
-                </td>
-                ....省略....
-            </tr>
-        </table>-->
-<!--    </th:block>-->
-</form>
-<div th:replace="dataform::info">
+    </form>
+
+    <th:block th:if="${ErrorMsg ne null}">
+        <span th:text="${ErrorMsg}" style="color: red"></span>
+    </th:block>
+    <th:block th:if="${TransList ne null}">
+        <div th:replace="TransList::TransList">
+        </div>
+    </th:block>
+    <th:block th:if="${TransCode ne null}">
+        <div  th:replace="dataform::info" >
+        </div>
+    </th:block>
 </div>
+
 </body>
 </html>

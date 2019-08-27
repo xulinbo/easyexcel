@@ -12,8 +12,9 @@ public class ExcelConfig {
     @Bean(initMethod = "init")
     public IndexDataMap indexDataMap(){
         IndexDataMap indexDataMap = new IndexDataMap();
-        indexDataMap.setPath("F:\\开发文档\\渤海银行整合平台服务接口清单-瘦身版.xlsx");
+        indexDataMap.setPath("/Users/linyu/mywork/ecm/excel/ecmexcel.xlsx");
+//        indexDataMap.setPath("F:\\开发文档\\渤海银行整合平台服务接口清单-瘦身版.xlsx");
         return indexDataMap;
-
     }
+
 }

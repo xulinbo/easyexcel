@@ -26,9 +26,9 @@ public class ExcelListener extends AnalysisEventListener {
         doSomething();
     }
     public void doSomething(){
-        for (Object o:data) {
-            System.out.println(o);
-        }
+//        for (Object o:data) {
+//            System.out.println(o);
+//        }
     }
 
     public List<Object> getData() {

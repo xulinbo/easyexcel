@@ -9,13 +9,19 @@ import com.alibaba.excel.support.ExcelTypeEnum;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
  * @author jipengfei
  */
 public class AnalysisContextImpl implements AnalysisContext {
+
+
+
+    private Map<String,String> link_map = new HashMap<String,String>();
 
     private Object custom;
 
@@ -41,6 +47,8 @@ public class AnalysisContextImpl implements AnalysisContext {
     public void setUse1904WindowDate(boolean use1904WindowDate) {
         this.use1904WindowDate = use1904WindowDate;
     }
+
+
 
     @Override
     public Object getCurrentRowAnalysisResult() {
@@ -169,4 +177,14 @@ public class AnalysisContextImpl implements AnalysisContext {
     public boolean trim() {
         return this.trim;
     }
+    @Override
+    public Map<String, String> getLink_map() {
+        return link_map;
+    }
+
+    @Override
+    public void setLink_map(Map map) {
+        this.link_map = map;
+    }
+
 }

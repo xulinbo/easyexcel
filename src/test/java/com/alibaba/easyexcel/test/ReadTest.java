@@ -17,6 +17,7 @@ import org.junit.Test;
 
 import java.io.*;
 import java.util.*;
+import java.util.regex.Pattern;
 
 public class ReadTest {
 
@@ -126,9 +127,10 @@ public class ReadTest {
     @Test
     public void saxReadListStringV2007() throws IOException {
 
-        InputStream inputStream = FileUtil.getResourcesFileInputStream("test.xlsx");
+//        InputStream inputStream = FileUtil.getResourcesFileInputStream("F:\\开发文档\\渤海银行整合平台服务接口清单-瘦身版.xlsx");
+        InputStream inputStream = new BufferedInputStream(new FileInputStream("F:\\开发文档\\渤海银行整合平台服务接口清单-瘦身版.xlsx"));
         ExcelListener excelListener = new ExcelListener();
-        EasyExcelFactory.readBySax(inputStream, new Sheet(1, 1), excelListener);
+        EasyExcelFactory.readBySax(inputStream, new Sheet(1, 2), excelListener);
         List<Object> list = excelListener.getData();
         for(Object obj:list){
             System.out.println(obj);
@@ -156,24 +158,26 @@ public class ReadTest {
      */
     @Test
     public void saxReadSheetsV2007() throws IOException {
-        InputStream inputStream = FileUtil.getResourcesFileInputStream("test.xlsx");
-//        InputStream inputStream =new FileInputStream("/src/test/resources/test.xlsx");
+//        InputStream inputStream = FileUtil.getResourcesFileInputStream("F:\\开发文档\\渤海银行整合平台服务接口清单-瘦身版.xlsx");
+        InputStream inputStream = new BufferedInputStream(new FileInputStream("F:\\开发文档\\渤海银行整合平台服务接口清单-瘦身版.xlsx"));
         ExcelListener excelListener = new ExcelListener();
         ExcelReader excelReader = EasyExcelFactory.getReader(inputStream,excelListener);
         List<Sheet> sheets = excelReader.getSheets();
-        for (Sheet sheet:sheets) {
-            if(sheet.getSheetNo() ==1) {
-                excelReader.read(sheet);
-            }else if(sheet.getSheetNo() ==2){
-                sheet.setHeadLineMun(1);
-                sheet.setClazz(ReadModel.class);
-                excelReader.read(sheet);
-            }else if(sheet.getSheetNo() ==3){
-                sheet.setHeadLineMun(1);
-                sheet.setClazz(ReadModel2.class);
-                excelReader.read(sheet);
-            }
-        }
+        excelReader.read(sheets.get(0));
+        excelReader.getAnalyser().getAnalysisContext().getLink_map();
+//        for (Sheet sheet:sheets) {
+//            if(sheet.getSheetNo() ==1) {
+//                excelReader.read(sheet);
+//            }else if(sheet.getSheetNo() ==2){
+//                sheet.setHeadLineMun(1);
+//                sheet.setClazz(ReadModel.class);
+//                excelReader.read(sheet);
+//            }else if(sheet.getSheetNo() ==3){
+//                sheet.setHeadLineMun(1);
+//                sheet.setClazz(ReadModel2.class);
+//                excelReader.read(sheet);
+//            }
+//        }
         inputStream.close();
     }
 
@@ -272,8 +276,11 @@ public class ReadTest {
         int num = wb.getNumberOfSheets();
         XSSFSheet xsheet =wb.getXSSFWorkbook().getSheetAt(0);
         Iterator<Row> it = xsheet.rowIterator();
+        System.out.println(xsheet.getFirstRowNum()+"++"+xsheet.getLastRowNum());
+        it.next();it.next();
+        int i = 0;
         while(it.hasNext()){
-            it.next();it.next();
+            i++;
             XSSFRow row = (XSSFRow) it.next();
             XSSFCell cell = row.getCell(0);
             String code = cell.getStringCellValue();
@@ -281,7 +288,7 @@ public class ReadTest {
             String name_cn = row.getCell(2).getStringCellValue();
             XSSFHyperlink hyperlink = cell.getHyperlink();
             if(hyperlink == null || hyperlink.getAddress() == null){
-                System.out.println(code);
+//                System.out.println(code);
                 continue;
             }
             String add = cell.getHyperlink().getAddress();//*!A1
@@ -310,6 +317,7 @@ public class ReadTest {
 //            }
 //            if(modules.size()>0) modules.sort(null);
         }
+        System.out.println(i);
     }
 
 }

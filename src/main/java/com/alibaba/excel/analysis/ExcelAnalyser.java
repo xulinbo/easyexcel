@@ -1,7 +1,9 @@
 package com.alibaba.excel.analysis;
 
+import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.metadata.Sheet;
 
+import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -29,5 +31,19 @@ public interface ExcelAnalyser {
      * @return all sheets
      */
     List<Sheet> getSheets();
+
+
+    /**
+     * 获取inpustream
+     * @param index
+     * @return
+     */
+    InputStream getInpuStream(int index);
+
+    /**
+     * 获取context
+     * @return
+     */
+    AnalysisContext getAnalysisContext();
 
 }

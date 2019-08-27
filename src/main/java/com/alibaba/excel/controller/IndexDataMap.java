@@ -1,14 +1,24 @@
 package com.alibaba.excel.controller;
 
 import com.alibaba.excel.EasyExcelFactory;
+import com.alibaba.excel.ExcelReader;
+import com.alibaba.excel.analysis.ExcelAnalyser;
+import com.alibaba.excel.analysis.ExcelAnalyserImpl;
+import com.alibaba.excel.analysis.v07.XlsxSaxAnalyser;
+import com.alibaba.excel.listener.ExcelListener;
 import com.alibaba.excel.metadata.Sheet;
 import com.alibaba.excel.util.FileUtil;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.*;
+import org.apache.xmlbeans.XmlException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 import java.io.*;
 import java.util.*;
 
@@ -22,23 +32,21 @@ public class IndexDataMap {
     private Map<String,List<String>> moduleMap = new HashMap<String,List<String>>(); //模块与交易名
     private Map<String,List<TransModel>> moduleTransMap = new HashMap<String,List<TransModel>>(); //模块与row
     private List<String> modules = new ArrayList<String>();//模块
+    private List<String> codes = new ArrayList<String>();
+    private List<String> names = new ArrayList<String>();
+    private List<String> code_namecn = new ArrayList<String>();//code;name
+    private Map<String,List<String>> module_code_namecnMap=new HashMap<String,List<String>>();//模块 code;name
 
-    public void init() throws IOException {
 
-        InputStream is = FileUtil.getResourcesFileInputStream("codeadd.properties");
-        Properties properties = new Properties();
-        properties.load(is);
-        Set<Map.Entry<Object,Object>> set = properties.entrySet();
-        Iterator<Map.Entry<Object,Object>> it = set.iterator();
-        while(it.hasNext()){
-            Map.Entry<Object,Object> enty= it.next();
-            if(enty.getKey() != null && enty.getValue()!=null)
-                codeMap.put(enty.getKey().toString(),enty.getValue().toString());
-        }
-        is.close();
+    public void init() throws IOException,XmlException {
 
         InputStream inputStream =new BufferedInputStream(new FileInputStream(path));
-        List<Object> data = EasyExcelFactory.read(inputStream, new Sheet(1, 2));
+//        List<Object> data = EasyExcelFactory.read(inputStream, new Sheet(1, 2));
+        ExcelListener excelListener = new ExcelListener();
+        ExcelReader excelReader = EasyExcelFactory.getReader(inputStream,excelListener);
+        excelReader.read(new Sheet(1, 2));
+        codeMap = excelReader.getAnalyser().getAnalysisContext().getLink_map();//超链接
+        List<Object> data = excelListener.getData();
         inputStream.close();
         for(Object obj:data){
             List<String> list = (List<String>) obj;
@@ -70,53 +78,45 @@ public class IndexDataMap {
             if(!modules.contains(module)){
                 modules.add(module);
             }
+            codes.add(code);
+            names.add(name_cn);
+            String code_name = code+";"+name_cn;
+            code_namecn.add(code_name);
+            if(module_code_namecnMap.containsKey(module)){
+                module_code_namecnMap.get(module).add(code_name);
+            }else{
+                List<String> code_names = new ArrayList<>();
+                code_names.add(code_name);
+                module_code_namecnMap.put(module,code_names);
+            }
         }
         //模块 排序
         if(modules.size()>0) modules.sort(null);
-//        SXSSFWorkbook wb = new SXSSFWorkbook(new XSSFWorkbook(inputStream));
-//        inputStream.close();
-//        int num = wb.getNumberOfSheets();
-//        XSSFSheet xsheet =wb.getXSSFWorkbook().getSheetAt(0);
-//        Iterator<Row> it = xsheet.rowIterator();
-//        while(it.hasNext()){
-//            it.next();it.next();
-//            XSSFRow row = (XSSFRow) it.next();
-//            XSSFCell cell = row.getCell(0);
-//            String code = cell.getStringCellValue();
-//            String module = row.getCell(1).getStringCellValue();
-//            String name_cn = row.getCell(2).getStringCellValue();
-//            XSSFHyperlink hyperlink = cell.getHyperlink();
-//            if(hyperlink == null || hyperlink.getAddress() == null){
-//                System.out.println(code);
-//                continue;
-//            }
-//
-//            String add = cell.getHyperlink().getAddress();//*!A1
-//            if(add.indexOf("!A1")>=0)add = add.substring(0,add.indexOf("!A1"));
-//            if(!module.contains(module))modules.add(module);//模块列表
-//            nameMap.put(code,name_cn);// code 与中文名
-//            if(moduleMap.containsKey(module)){
-//                moduleMap.get(module).add(code);
-//            }else{
-//                List<String> list = new ArrayList<String>();
-//                list.add(code);
-//                moduleMap.put(module,list);
-//            }
-//            System.out.println(code+"="+add);
-//            codeMap.put(code,add);//code 与 sheet
-//            TransModel transModel = new TransModel(code,name_cn,add,module);
-//            transMap.put(code,transModel);
-//            if(moduleTransMap.containsKey(module)){
-//                moduleTransMap.get(module).add(transModel);
-//            }else{
-//                List<TransModel> trans = new ArrayList<TransModel>();
-//                trans.add(transModel);
-//                moduleTransMap.put(module,trans);
-//            }
-//            if(modules.size()>0) modules.sort(null);
-//        }
-
     }
+
+    /**
+     * 解析  生成超链接信息
+     * @param ins
+     * @throws IOException
+     */
+    private Map parse(InputStream ins) throws IOException {
+        SAXParserFactory sFactory = SAXParserFactory.newInstance();
+        try{
+            SAXParser saxParser  = sFactory.newSAXParser();
+            ExcelLinkHandler excelLinkHandler = new ExcelLinkHandler();
+            saxParser.parse(ins,excelLinkHandler);
+            codeMap = excelLinkHandler.getLinksMap();
+            return codeMap;
+        } catch (SAXException e) {
+            e.printStackTrace();
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+        }finally {
+            if(ins != null )ins.close();
+        }
+        return codeMap;
+    }
+
     class TransModel{
         private String code;
         private String name;
@@ -220,4 +220,36 @@ public class IndexDataMap {
     public void setModuleTransMap(Map<String, List<TransModel>> moduleTransMap) {
         this.moduleTransMap = moduleTransMap;
     }
+    public List<String> getCodes() {
+        return codes;
+    }
+
+    public List<String> getNames() {
+        return names;
+    }
+
+    public void setNames(List<String> names) {
+        this.names = names;
+    }
+
+    public void setCodes(List<String> codes) {
+        this.codes = codes;
+    }
+
+    public List<String> getCode_namecn() {
+        return code_namecn;
+    }
+
+    public void setCode_namecn(List<String> code_namecn) {
+        this.code_namecn = code_namecn;
+    }
+
+    public Map<String, List<String>> getModule_code_namecnMap() {
+        return module_code_namecnMap;
+    }
+
+    public void setModule_code_namecnMap(Map<String, List<String>> module_code_namecnMap) {
+        this.module_code_namecnMap = module_code_namecnMap;
+    }
+
 }
